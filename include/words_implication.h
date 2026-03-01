@@ -1,4 +1,3 @@
-// standard headers
 #include <iostream>
 #include <fstream>
 #include <sstream>
@@ -9,6 +8,7 @@
 
 #include "color.h"
 #include "display.h"
+#include "user_stats.h"
 
 using namespace std;
 
@@ -20,9 +20,13 @@ public:
     void word_count(string filepath);
 
     // PICKS WORD
-    void word(int count_5);
+    void word();
+
+    // PLAYER SOLVES WORD & COLORING
+    void solving(int random_index);
 
 private:
+    void remaining_keys();
     vector<string> word_index;
     vector<char> letter;
 };
@@ -82,31 +86,45 @@ void Words::word_count(string filepath)
 
     cout << "Total number of words in 'words.txt': " << count << endl;
     cout << "Total number of 5-letter words in 'words.txt' **Without Special Characters: " << count_5 << endl;
-    Words::word(count_5);
+    Words::word();
 }
 
 // PLANS TO MAKE THIS FUNCTION INTO MULTIPLE FUNCTIONS, BUT FOR NOW IT'S ALL IN ONE
-void Words::word(int count_5)
+void Words::word()
 {
     ifstream file("src/5_letter.txt");
-    vector<string> word_index(count_5);
-    // avoid variable length arrays (VLA) which are a non-standard C++ extension
-    // use a std::vector or std::string to hold the characters instead
-    vector<char> letter(word_index.size());
-
-    for (size_t i = 0; i < static_cast<size_t>(count_5); i++)
+    if (!file.is_open())
     {
-        string word;
-        file >> word;
-        word_index[i] = word;
+        cerr << "Failed to open 5_letter.txt" << endl;
+        exit(1);
     }
 
-    // Generate a random index to select a random word from the list of 5-letter words
+    word_index.clear();
+    letter.resize(5);
+
+    string w;
+    while (file >> w)
+    {
+        word_index.push_back(w);
+    }
+
+    if (word_index.empty())
+    {
+        cerr << "No words loaded!" << endl;
+        exit(1);
+    }
+
     srand(time(NULL));
-    int random_index = rand() % count_5;
+    int random_index = rand() % word_index.size(); // use actual size, not count_5
     cout << "Random index: " << random_index << endl;
     cout << "Random word: " << word_index[random_index] << endl;
 
+    solving(random_index);
+}
+
+// Multiple Functions
+void Words::solving(int random_index)
+{
     // use size_t for indexing to match the return type of string::length()
     for (size_t i = 0; i < word_index[random_index].length(); i++)
     {
@@ -120,7 +138,6 @@ void Words::word(int count_5)
     while (attempts < 6)
     {
         clearScreen();
-
         // Display history (up to 5 guesses) with blanks for missing slots
         for (size_t j = 0; j < 6; j++)
         {
@@ -138,16 +155,15 @@ void Words::word(int count_5)
 
         string guess;
         cout << "Say a word: ";
+
         if (!(cin >> guess))
         {
-            // input stream closed (EOF or error); exit the loop gracefully
             break;
         }
 
         // CHECKS WORD IS VALID, HAS 5 LETTERS, AND EXISTS IN THE LIST
         bool valid_length = (guess.length() == 5);
-        bool in_dictionary = valid_length &&
-                             (find(word_index.begin(), word_index.end(), guess) != word_index.end());
+        bool in_dictionary = valid_length && (find(word_index.begin(), word_index.end(), guess) != word_index.end());
 
         if (!valid_length || !in_dictionary)
         {
@@ -225,16 +241,56 @@ void Words::word(int count_5)
                 cout << j + 1 << "." << " : " << "_____\n";
         }
 
-        cout << "\nAttempt " << (attempts + 1) << " of 6";
+        if (attempts == 6)
+        {
+            cout << "\nAttempt 6 of 6";
+            cout << "\nThe word was: " << word_index[random_index] << endl;
+            updateStats(false, attempts);
+        }
+        else
+        {
+            cout << "\nAttempt " << (attempts + 1) << " of 6";
+        }
+
         if (guess == word_index[random_index])
         {
-            cout << "\nCongratulations! You've guessed the word!" << endl;
+            clearScreen();
+            cout << "\nCongratulations! You've guessed the word!\n" << endl;
+            updateStats(true, attempts);
+            return;
+        } else if (attempts == 6) {
+            cout << "\nGame Over! The word was: " << word_index[random_index] << endl;
+            updateStats(false, attempts);
             return;
         }
-        else if (attempts == 6)
+    }
+}
+
+// REMAINING KEYS FUNCTION
+void Words::remaining_keys()
+{
+    string remaining_output;
+    vector<string> letters = {
+        "a", "b", "c", "d", "e", "f", "g", "h", "i", "j",
+        "k", "l", "m", "n", "o", "p", "q", "r", "s", "t",
+        "u", "v", "w", "x", "y", "z"};
+
+    for (const auto &letter : letters)
+    {
+        // Check if the letter is in the correct position (green)
+        if (find(letter.begin(), letter.end(), letter[0]) != letter.end())
         {
-            cout << "\nThe word was: " << word_index[random_index] << endl;
-            return;
+            remaining_output += color(GREEN) + letter + color(RESET) + " ";
+        }
+        // Check if the letter is in the word but in the wrong position (yellow)
+        else if (find(letter.begin(), letter.end(), letter[0]) != letter.end())
+        {
+            remaining_output += color(YELLOW) + letter + color(RESET) + " ";
+        }
+        // Letter is not in the word (gray)
+        else
+        {
+            remaining_output += color(WHITE) + letter + color(RESET) + " ";
         }
     }
 }

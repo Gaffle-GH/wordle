@@ -31,7 +31,7 @@ void loadingBar()
         {
             if (j <= pos)
             {
-                cout << color(YELLOW) << "*";
+                cout << color(YELLOW) << "#";
             }
             else
             {
@@ -76,8 +76,6 @@ void info()
 
     cout << "\nPress Enter to Continue [] : ";
     cin.ignore();
-
-    loadingAnimation(0.5);
 }
 
 #endif

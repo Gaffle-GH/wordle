@@ -2,6 +2,7 @@
 #define COLORS_H
 
 #include <string>
+
 using namespace std;
 
 const int RESET      = 0;
