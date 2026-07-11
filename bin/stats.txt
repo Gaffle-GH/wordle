@@ -5,6 +5,6 @@ Win Line 4: 0
 Win Line 5: 0
 Win Line 6: 0
 
-Total Games Played: 0
+Total Games Played: 4
 Total Wins: 0
 Win Rate: 0%

@@ -1,79 +1,12 @@
-#include <iostream>
-#include <fstream>
-#include <sstream>
-#include <string>
-#include <vector>
+#ifndef USER_STATS_H
+#define USER_STATS_H
 
-#include "color.h"
-#include "display.h"
-
-using namespace std;
-
-int totalGames = 0;
-int wins = 0;
-int totalAttempts = 0;
-int wins_per_attempt[6] = {0, 0, 0, 0, 0, 0};
+extern int totalGames;
+extern int wins;
+extern int totalAttempts;
+extern int wins_per_attempt[6];
 
 void updateStats(bool won, int attempts);
 void stats(int totalGames, int wins, int attempts);
 
-void updateStats(bool won, int attempts)
-{
-    totalGames += 1;
-    if (won)
-    {
-        wins += 1;
-        if (attempts >= 1 && attempts <= 6)
-        {
-            wins_per_attempt[attempts - 1]++;
-            totalAttempts += attempts;
-        }
-    }
-
-    stats(totalGames, wins, totalAttempts);
-}
-
-void stats(int totalGames, int wins, int attempts)
-{
-    const int barWidth = 20;
-
-    cout << "Win Distribution:\n";
-    for (int i = 0; i < 6; i++)
-    {
-        int barLength = (barWidth * wins_per_attempt[i]) / max(1, wins);
-        int emptyLength = barWidth - barLength;
-
-        cout << "Attempt " << (i + 1) << "["
-             << color(GREEN) << string(barLength, '#') << color(RESET)
-             << string(emptyLength, ' ')
-             << "] (" << wins_per_attempt[i] << " wins)\n";
-    }
-
-    cout << "\nTotal Games Played: " << totalGames << endl;
-    cout << "Total Wins: " << wins << endl;
-    cout << "Win Rate: " << (totalGames > 0 ? (static_cast<double>(wins) / totalGames) * 100 : 0) << "%\n";
-    cout << endl;
-
-    cout << "Save and Exit: ";
-    cin.ignore();
-    cin.get();
-    clearScreen();
-
-    // EXPORTS/SAVE STATS
-    ofstream statsFile("bin/stats.txt");
-    if (statsFile.is_open()){
-        int line_count = 1;
-        for(int i = 0; i < 6; i++){
-            statsFile << "Win Line " << line_count++ << ": " << wins_per_attempt[i] << endl;
-        }
-
-        statsFile << endl;
-        statsFile << "Total Games Played: " << totalGames << endl;
-        statsFile << "Total Wins: " << wins << endl;
-        statsFile << "Win Rate: " << (totalGames > 0 ? (static_cast<double>(wins) / totalGames) * 100 : 0) << "%\n";
-    }   
-    else{
-        cerr << "Unable to open bin/stats.txt for writing." << endl;
-    }
-
-}
+#endif

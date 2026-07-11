@@ -1,23 +1,22 @@
 #ifndef DISPLAY_H
 #define DISPLAY_H
 
-#include <iostream>
-#include <thread>
-#include <chrono>
 #include <atomic>
+#include <chrono>
+#include <iostream>
+#include <limits>
+#include <thread>
 
 #include "color.h"
 
-using namespace std;
+inline std::atomic<bool> loading{true};
 
-atomic<bool> loading(true);
-
-void clearScreen()
+inline void clearScreen()
 {
-    cout << "\033[2J\033[1;1H";
+    std::cout << "\033[2J\033[1;1H";
 }
 
-void loadingBar()
+inline void loadingBar()
 {
     const int barWidth = 30;
     int i = 0;
@@ -26,56 +25,57 @@ void loadingBar()
     {
         int pos = i % barWidth;
 
-        cout << color(WHITE) << "[" << color(YELLOW) << (pos + 1) << color(WHITE) << " / " << color(YELLOW) << barWidth << color(WHITE) << "] [";
+        std::cout << color(WHITE) << "[" << color(YELLOW) << (pos + 1) << color(WHITE) << " / " << color(YELLOW) << barWidth << color(WHITE) << "] [";
         for (int j = 0; j < barWidth; j++)
         {
             if (j <= pos)
             {
-                cout << color(YELLOW) << "#";
+                std::cout << color(YELLOW) << "#";
             }
             else
             {
-                cout << " ";
+                std::cout << " ";
             }
         }
-        cout << color(WHITE) << "]\r";
-        cout.flush();
+        std::cout << color(WHITE) << "]\r";
+        std::cout.flush();
 
-        this_thread::sleep_for(std::chrono::milliseconds(80));
+        std::this_thread::sleep_for(std::chrono::milliseconds(80));
         i++;
     }
 
-    // Complete bar
-    cout << color(WHITE) << "[" << color(YELLOW) << barWidth << color(WHITE) << " / " << color(YELLOW) << barWidth << color(WHITE) << "] [";
+    std::cout << color(WHITE) << "[" << color(YELLOW) << barWidth << color(WHITE) << " / " << color(YELLOW) << barWidth << color(WHITE) << "] [";
     for (int j = 0; j < barWidth; j++)
     {
-        cout << color(YELLOW) << "*";
+        std::cout << color(YELLOW) << "*";
     }
-    cout << color(WHITE) << "]" << endl;
+    std::cout << color(WHITE) << "]" << std::endl;
 }
 
-void loadingAnimation(double duration_seconds)
+inline void loadingAnimation(double duration_seconds)
 {
+    loading = true;
     clearScreen();
-    thread loader(loadingBar);
-    this_thread::sleep_for(std::chrono::duration<double>(duration_seconds));
+    std::thread loader(loadingBar);
+    std::this_thread::sleep_for(std::chrono::duration<double>(duration_seconds));
     loading = false;
     loader.join();
     clearScreen();
 }
 
-void info()
+inline void info()
 {
-    cout << "⚠️ Disclaimer: " << endl;
-    cout << "This is the 'NYTimes " << color(GREEN) << "W" << color(YELLOW) << "o" << color(WHITE) << "r" << color(GREEN) << "d" << color(YELLOW) << "l" << color(WHITE) << "e'" << " Game But Created in C++ Format!" << endl;
-    cout << "This Version of the Game is Created by: Gaffle-GH" << endl;
+    clearScreen();
+    std::cout << "⚠️ Disclaimer: " << std::endl;
+    std::cout << "This is the 'NYTimes " << color(GREEN) << "W" << color(YELLOW) << "o" << color(WHITE) << "r" << color(GREEN) << "d" << color(YELLOW) << "l" << color(WHITE) << "e'" << " Game But Created in C++ Format!" << std::endl;
+    std::cout << "This Version of the Game is Created by: Gaffle-GH" << std::endl;
 
-    cout << "\n⚠️ File Management: " << endl;
-    cout << "Game relies on the text file named 'words.txt', which is located in the 'src' directory." << endl;
-    cout << "File contains ONE WORD PER LINE, and within the game process it will filter out any word that is not 5 LETTERS LONG or contains SPECIAL CHARACTERS" << endl;
+    std::cout << "\n⚠️ File Management: " << std::endl;
+    std::cout << "Game relies on the text file named 'words.txt', which is located in the 'src' directory." << std::endl;
+    std::cout << "File contains ONE WORD PER LINE, and within the game process it will filter out any word that is not 5 LETTERS LONG or contains SPECIAL CHARACTERS" << std::endl;
 
-    cout << "\nPress Enter to Continue [] : ";
-    cin.ignore();
+    std::cout << "\nPress Enter to Continue [] : ";
+    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
 }
 
 #endif

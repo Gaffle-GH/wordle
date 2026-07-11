@@ -1,0 +1,17 @@
+[
+  {
+    "directory": "/Users/gaffle/Documents/programming/GITHUB Personal Projects/wordle",
+    "command": "g++ -Wall -Wextra -std=c++17 -I include -c src/wordle.cc -o bin/wordle.o",
+    "file": "src/wordle.cc"
+  },
+  {
+    "directory": "/Users/gaffle/Documents/programming/GITHUB Personal Projects/wordle",
+    "command": "g++ -Wall -Wextra -std=c++17 -I include -c src/words_implication.cc -o bin/words_implication.o",
+    "file": "src/words_implication.cc"
+  },
+  {
+    "directory": "/Users/gaffle/Documents/programming/GITHUB Personal Projects/wordle",
+    "command": "g++ -Wall -Wextra -std=c++17 -I include -c src/user_stats.cc -o bin/user_stats.o",
+    "file": "src/user_stats.cc"
+  }
+]

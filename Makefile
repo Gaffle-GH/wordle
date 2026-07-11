@@ -5,7 +5,7 @@ BIN_DIR = bin
 TARGET = $(BIN_DIR)/wordle
 
 SRC_DIR = src
-SRCS = $(SRC_DIR)/wordle.cc
+SRCS = $(SRC_DIR)/wordle.cc $(SRC_DIR)/words_implication.cc $(SRC_DIR)/user_stats.cc
 
 $(TARGET): $(SRCS) | $(BIN_DIR)
 	$(CXX) $(CXXFLAGS) -o $(TARGET) $(SRCS)

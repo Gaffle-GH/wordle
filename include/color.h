@@ -3,20 +3,19 @@
 
 #include <string>
 
-using namespace std;
+constexpr int RESET = 0;
+constexpr int BOLD = 1;
+constexpr int RED = 31;
+constexpr int GREEN = 32;
+constexpr int YELLOW = 33;
+constexpr int BLUE = 34;
+constexpr int MAGENTA = 35;
+constexpr int CYAN = 36;
+constexpr int WHITE = 37;
 
-const int RESET      = 0;
-const int BOLD       = 1;
-const int RED        = 31;
-const int GREEN      = 32;
-const int YELLOW     = 33;
-const int BLUE       = 34;
-const int MAGENTA    = 35;
-const int CYAN       = 36;
-const int WHITE      = 37;
-
-string color(int code){
-    return "\033[" + to_string(code) + "m";
+inline std::string color(int code)
+{
+    return "\033[" + std::to_string(code) + "m";
 }
 
 #endif
