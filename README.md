@@ -2,8 +2,6 @@
 
 A terminal-based Wordle clone written in C++. Guess the hidden five-letter word in six tries, with color-coded feedback after each guess.
 
-Created by [Gaffle-GH](https://github.com/Gaffle-GH).
-
 ## Features
 
 - Classic Wordle gameplay in the terminal
