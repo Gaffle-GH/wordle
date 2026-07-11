@@ -17,7 +17,10 @@ class Words
 public:
     // CHECK FILE
     void check_file();
-    void word_count(string filepath);
+    void word_count(string input_file);
+
+    // IMPORT STATS
+    void import_stats(string save_file);
 
     // PICKS WORD
     void word();
@@ -25,24 +28,53 @@ public:
     // PLAYER SOLVES WORD & COLORING
     void solving(int random_index);
 
+    // DEBUG
+    void debug();
+
 private:
     void remaining_keys();
     vector<string> word_index;
     vector<char> letter;
 };
 
+// DEBUG
+void Words::debug(){
+    clearScreen();
+
+    cout << "Debugging Mode: \n";
+    
+    cout << "FILE CHECK:" << endl;
+    check_file(); // CHECK FILES AND LOAD WORDS
+    import_stats("bin/stats.txt");
+
+    cout << endl;
+
+    cin.ignore();
+    return;
+}
+
 // CHECKS FILE EXISTENCE AND CALLS WORD COUNT.
 void Words::check_file()
 {
-    clearScreen();
-    string filepath = "src/words.txt";
+    string save_file = "bin/stats.txt";
+    string input_file = "src/words.txt";
+
+    if (filesystem::exists(save_file))
+    {
+        cout << "File 'stats.txt' exists in bin directory." << endl;
+        // import_stats(save_file);
+    }
+    else
+    {
+        cout << "File 'stats.txt' does not exist in bin directory." << endl;
+    }
 
     // Checks if the file exists in the src directory
     // Ignore Error: 'filesystem' is not a member of 'std'
-    if (filesystem::exists(filepath))
+    if (filesystem::exists(input_file))
     {
         cout << "File 'words.txt' exists in src directory." << endl;
-        return (word_count(filepath));
+        // word_count(input_file);
     }
     else
     {
@@ -51,10 +83,63 @@ void Words::check_file()
     }
 }
 
-// RETURNS NUM OF WORDS IN FILE, CREATES NEW FILE THAT CONTAINS 5-LETTERS ONLY FOR GAME FUNCTIONALITY.
-void Words::word_count(string filepath)
+// APPLIES STATS
+void Words::import_stats(string save_file)
 {
-    ifstream file(filepath);
+    ifstream file(save_file);
+    if (!file.is_open())
+    {
+        cerr << "Unable to open " << save_file << " for reading stats." << endl;
+        return;
+    }
+
+    string line;
+    while (getline(file, line))
+    {
+        int idx = 0;
+        int value = 0;
+
+        if (sscanf(line.c_str(), "Win Line %d: %d", &idx, &value) == 2)
+        {
+            if (idx >= 1 && idx <= 6)
+            {
+                wins_per_attempt[idx - 1] = value;
+            }
+            continue;
+        }
+
+        if (sscanf(line.c_str(), "Total Games Played: %d", &value) == 1)
+        {
+            totalGames = value;
+            continue;
+        }
+        if (sscanf(line.c_str(), "Total Wins: %d", &value) == 1)
+        {
+            wins = value;
+            continue;
+        }
+    }
+
+    totalAttempts = 0;
+    for (int i = 0; i < 6; i++)
+    {
+        totalAttempts += (i + 1) * wins_per_attempt[i];
+    }
+
+    cout << "Loaded stats: " << totalGames << " games, " << wins << " wins, " << totalAttempts << " attempts." << endl;
+    cout << "Win distribution: ";
+    for (int i = 0; i < 6; i++)
+    {
+        cout << "[" << (i + 1) << ": " << wins_per_attempt[i] << "] ";
+    }
+    cout << endl;
+}
+
+
+// RETURNS NUM OF WORDS IN FILE, CREATES NEW FILE THAT CONTAINS 5-LETTERS ONLY FOR GAME FUNCTIONALITY.
+void Words::word_count(string input_file)
+{
+    ifstream file(input_file);
     string word;
     int count_5 = 0;
     int count = 0;

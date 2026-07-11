@@ -19,4 +19,8 @@ run: $(TARGET)
 clean:
 	rm -f $(TARGET)
 
+restart: 
+	rm -f $(TARGET)
+	$(MAKE) run
+
 .PHONY: clean

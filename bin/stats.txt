@@ -1,0 +1,10 @@
+Win Line 1: 0
+Win Line 2: 0
+Win Line 3: 0
+Win Line 4: 0
+Win Line 5: 0
+Win Line 6: 0
+
+Total Games Played: 0
+Total Wins: 0
+Win Rate: 0%
